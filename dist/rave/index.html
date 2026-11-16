@@ -44,12 +44,34 @@
       <div class="transport"><button class="primary" id="play" type="button">Play reference rhythm</button><button class="plain" id="restart" type="button">Restart</button><label class="volume">Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="0.65"></label><label class="loop"><input id="loop" type="checkbox"> Loop</label></div>
       <p id="status" class="status" aria-live="polite">Press Play to hear the selected experiment.</p>
       <p id="description" class="track-description">The first exposed latent coordinate follows a ±1 sinusoid at 0.3 Hz. The other 15 exposed coordinates stay at zero. No recording is fed into the encoder.</p>
-      <p id="measurement" class="measurement">Measured output rhythm: 0.3 Hz. All oscillator experiments share one playback gain.</p>
+      <p id="measurement" class="measurement">Measured output rhythm: 0.3 Hz. This first set of experiments shares one playback gain.</p>
     </section>
     <section class="comparison" aria-labelledby="compare-title"><h2 id="compare-title">Return to the dataset</h2><p class="muted">Hear a cleaned sleep excerpt and its encode → decode reconstruction. These two 24-second clips share a gain and are aligned by their energy envelopes.</p><div class="compare-buttons" role="group" aria-label="Source comparison"><button data-preset="source" aria-pressed="false">Cleaned source</button><button data-preset="reconstruction" aria-pressed="false">Reconstruction</button><button id="reset-patch">Return to reference rhythm</button></div></section>
     <section class="details">
       <h2>What the controls reveal</h2>
       <div class="detail-text"><p><b>Rate changes the recurring pulse.</b> The 0.2, 0.3, and 0.5 Hz renders each show their strongest slow energy modulation at the chosen rate.</p><p><b>Range and position change the output.</b> Moving through a smaller region, shifting its center, or holding a second coordinate elsewhere changes the model’s sound and level. The coordinates do not have fixed labels such as “snore,” “breath,” or “calm.”</p><p class="muted">This recreates the patch’s control logic at 44.1 kHz. A running Max patch can differ in phase, audio settings, gain, and random noise. The oscillator is drawn at its input phase; model latency remains in the output.</p><p class="muted small">Reference: <a href="https://docs.cycling74.com/reference/cycle~/" target="_blank" rel="noopener noreferrer">cycle~</a> uses a cosine waveform by default. <a href="https://github.com/acids-ircam/nn_tilde/blob/v1.6.0/src/backend/backend.cpp#L34-L75" target="_blank" rel="noopener noreferrer">nn~</a> converts the incoming signal to the model’s latent sample rate.</p></div>
+    </section>
+    <section class="wildcards" aria-labelledby="wildcards-title">
+      <div class="section-head"><h2 id="wildcards-title">Beyond the first coordinate</h2><span class="label">THREE RECORDED EXPERIMENTS</span></div>
+      <p class="muted wildcard-intro">What happens when several controls move together? Try overlapping cycles, a stepped sequence, or a slow drift across the other 15 coordinates. These are 30-second renders from the same 360k model.</p>
+      <div class="compare-buttons" role="group" aria-label="Multi-coordinate experiments">
+        <button data-wildcard="wildcard_crossing" class="selected" aria-pressed="true">Crossing cycles</button>
+        <button data-wildcard="wildcard_steps" aria-pressed="false">Eight-step pattern</button>
+        <button data-wildcard="wildcard_drift" aria-pressed="false">Slow drift</button>
+      </div>
+      <div class="wildcard-reading" aria-live="polite">
+        <div><p class="label" id="wildcard-count">5 MOVING COORDINATES</p><h3 id="wildcard-title">Crossing cycles</h3><p id="wildcard-summary">Five coordinates move at related rates. Their cycles meet, separate, and meet again.</p></div>
+        <div class="wildcard-listen"><p id="wildcard-listen">Listen for changes in the spacing and strength of the pulses as the cycles overlap.</p><p class="muted" id="wildcard-pattern">The control pattern repeats every 6.67 seconds. The decoder adds its own texture and random variation.</p></div>
+      </div>
+      <div class="signal-label"><span>OUTPUT / RENDERED AUDIO</span><span id="wildcard-clock">0:00 / 0:30</span></div>
+      <canvas id="wildcard-waveform" aria-label="Waveform of the selected multi-coordinate experiment"></canvas>
+      <label class="sr-only" for="wildcard-seek">Multi-coordinate experiment playback position in seconds</label><input id="wildcard-seek" type="range" min="0" max="30" step="0.05" value="0" aria-valuetext="0 seconds">
+      <div class="transport"><button class="primary" id="wildcard-play" type="button">Play crossing cycles</button><button class="plain" id="wildcard-restart" type="button">Restart</button><label class="volume">Volume <input id="wildcard-volume" type="range" min="0" max="1" step="0.01" value="0.65"></label><label class="loop"><input id="wildcard-loop" type="checkbox"> Loop</label></div>
+      <p id="wildcard-status" class="status" aria-live="polite">Select an example, then press Play. Switch examples during playback to compare.</p>
+      <div class="controls-heading"><h3>What feeds the decoder</h3><p class="muted">Each numbered control is one learned coordinate. The graphs show its input, not the sound it produces. Phase sets where a cycle begins; center shifts its range.</p></div>
+      <div class="coordinate-grid" id="coordinate-grid" aria-label="Settings for all 16 decoder coordinates"></div>
+      <p class="muted wildcard-note">The input signals supply the pattern; the trained decoder supplies the sound. In a short test at ±1, coordinates 2–6 changed the output more than coordinates 7–16. These are observations from this model and range, not fixed roles for the controls.</p>
+      <p class="measurement" id="wildcard-gain">The three examples share one playback gain, separate from the earlier experiments. No pitch shifting, time stretching, or added audio.</p>
     </section>
     <footer><span>44.1 kHz · mono routed to both speakers · 16 exposed coordinates</span><span>Exact model / sleeping_default_p2_360k_streaming.ts</span></footer>
   <div class="license-footer" role="contentinfo"><small>© 2026 Bo — Maladaptive Daydream. Original creative content: <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</small><span class="license-links"><a href="../license.html">Attribution &amp; licenses</a> · <a href="https://github.com/bo-bowen-he/maladaptive-daydream">Source on GitHub</a></span></div></main>

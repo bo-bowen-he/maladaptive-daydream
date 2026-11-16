@@ -4,7 +4,7 @@ Dataset studies for Bo's Handmade Datasets Milestone 2 presentation.
 
 - **pix2pix:** draw cloud contours and run the trained image-to-image model in the browser.
 - **Cloud GAN:** explore an eight-anchor latent loop, random paths, and the original path.
-- **Sleep / RAVE:** compare authentic renders from the 360k checkpoint, starting with a 0.3 Hz oscillator at 44.1 kHz.
+- **Sleep / RAVE:** compare authentic renders from the 360k checkpoint, starting with a 0.3 Hz oscillator at 44.1 kHz. Explore crossing cycles, an eight-step sequence, and slow movement across the other 15 coordinates, with exact input settings and graphs for all 16 controls.
 - **Writing:** selected source excerpts and recorded default/poetry-only RAG comparisons.
 
 The site is static HTML, CSS and JavaScript. `dist/` contains the deployable site.
