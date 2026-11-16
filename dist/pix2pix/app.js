@@ -14,6 +14,9 @@
   const statusEl = $('status'), veil = $('veil'), veilText = $('veilText'), veilBar = $('veilBar');
   const sizeEl = $('size'), sizeOut = $('sizeOut');
   const undoBtn = $('undo'), goBtn = $('go'), saveBtn = $('save'), liveEl = $('live');
+  const comparison = $('comparison'), comparisonOutput = $('comparisonOutput');
+  const rendered = document.createElement('canvas');
+  rendered.width = rendered.height = N;
 
   const small = document.createElement('canvas');
   small.width = small.height = N;
@@ -22,7 +25,23 @@
   let weights = null;       // variable name -> tensor
   let busy = false, queued = false;
   let ink = '#000';
+  let activeExample = null, inputVersion = 0, imageRequest = 0;
   const undoStack = [];
+
+  function setInputExample(example) {
+    activeExample = example;
+    inputVersion++;
+    comparison.hidden = true;
+    if (example !== null) {
+      $('reference').src = EXAMPLES[example].replace('.png', '-photo.png');
+      $('referenceNote').textContent = `Training example ${example + 1}`;
+    }
+  }
+
+  function customInput() {
+    imageRequest++; // A pending example/image load must not overwrite a new drawing.
+    setInputExample(null);
+  }
 
   // ---------- model: read a .pict file ----------
   // Layout: three length-prefixed chunks (big-endian uint32 length, then bytes):
@@ -83,6 +102,7 @@
     const next = parsePict(buf);
     if (weights) Object.values(weights).forEach(t => t.dispose());
     weights = next;
+    comparison.hidden = true;
     $('modelName').textContent = `Model: ${label}`;
     goBtn.disabled = false;
     veil.hidden = true;
@@ -124,6 +144,7 @@
     if (!weights) return;
     if (busy) { queued = true; return; }
     busy = true;
+    const version = inputVersion, example = activeExample, model = weights;
     statusEl.textContent = 'Generating…';
     try {
       sctx.drawImage(draw, 0, 0, N, N);
@@ -132,10 +153,17 @@
         const input = tf.browser.fromPixels(small).toFloat().div(127.5).sub(1).expandDims(0);
         return generate(input).squeeze([0]).add(1).div(2).clipByValue(0, 1);
       });
-      try { await tf.browser.toPixels(img, out); } finally { img.dispose(); }
-      statusEl.textContent = `${Math.round(performance.now() - t0)} ms`;
-      saveBtn.disabled = false;
-      $('outputNote').textContent = 'Live model output · 256 × 256';
+      try { await tf.browser.toPixels(img, rendered); } finally { img.dispose(); }
+      if (version === inputVersion && model === weights) {
+        out.getContext('2d').drawImage(rendered, 0, 0);
+        statusEl.textContent = `${Math.round(performance.now() - t0)} ms`;
+        saveBtn.disabled = false;
+        $('outputNote').textContent = 'Live model output · 256 × 256';
+        if (example !== null) {
+          comparisonOutput.getContext('2d').drawImage(rendered, 0, 0);
+          comparison.hidden = false;
+        }
+      }
     } catch (err) {
       console.error(err);
       statusEl.textContent = 'Generation failed. Reload the page and try again.';
@@ -148,15 +176,16 @@
   function fillWhite() { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, draw.width, draw.height); }
 
   function snapshot() {
-    undoStack.push(ctx.getImageData(0, 0, draw.width, draw.height));
+    undoStack.push({ pixels: ctx.getImageData(0, 0, draw.width, draw.height), example: activeExample });
     if (undoStack.length > UNDO_LIMIT) undoStack.shift();
     undoBtn.disabled = false;
   }
   function undo() {
-    $('reference').hidden=true; $('referenceNote').textContent='Edited input — no paired source photograph';
     const last = undoStack.pop();
     if (!last) return;
-    ctx.putImageData(last, 0, 0);
+    imageRequest++;
+    setInputExample(last.example);
+    ctx.putImageData(last.pixels, 0, 0);
     undoBtn.disabled = undoStack.length === 0;
     changed();
   }
@@ -180,8 +209,7 @@
     draw.setPointerCapture(e.pointerId);
     snapshot();
     const p = pos(e);
-    $('referenceNote').textContent = 'Custom drawing — no paired source photograph';
-    $('reference').hidden = true;
+    customInput();
     ctx.fillStyle = ink;
     ctx.beginPath(); ctx.arc(p.x, p.y, sizeEl.value / 2, 0, Math.PI * 2); ctx.fill();
     last = p;
@@ -219,9 +247,10 @@
     el.addEventListener('change', () => { ink = el.value; }));
 
   undoBtn.addEventListener('click', undo);
-  $('clear').addEventListener('click', () => { $('reference').hidden=true; $('referenceNote').textContent='Edited input — no paired source photograph'; snapshot(); fillWhite(); changed(); });
-  $('invert').addEventListener('click', () => { $('reference').hidden=true; $('referenceNote').textContent='Edited input — no paired source photograph';
+  $('clear').addEventListener('click', () => { snapshot(); customInput(); fillWhite(); changed(); });
+  $('invert').addEventListener('click', () => {
     snapshot();
+    customInput();
     const d = ctx.getImageData(0, 0, draw.width, draw.height);
     for (let i = 0; i < d.data.length; i += 4) {
       d.data[i] = 255 - d.data[i]; d.data[i + 1] = 255 - d.data[i + 1]; d.data[i + 2] = 255 - d.data[i + 2];
@@ -230,8 +259,9 @@
     changed();
   });
 
-  function placeImage(img) {            // centre-crop to a square, like the training data
-    snapshot();
+  function placeImage(img, example = null, recordUndo = true) { // centre-crop like the training data
+    if (recordUndo) snapshot();
+    setInputExample(example);
     const s = Math.min(img.naturalWidth, img.naturalHeight);
     fillWhite();
     ctx.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, draw.width, draw.height);
@@ -248,8 +278,13 @@
   $('openImage').addEventListener('change', async e => {
     const file = e.target.files[0];
     if (!file) return;
+    const request = ++imageRequest;
+    comparison.hidden = true;
     const url = URL.createObjectURL(file);
-    try { placeImage(await loadImage(url)); $('reference').hidden=true; $('referenceNote').textContent='Custom image — no paired source photograph'; }
+    try {
+      const img = await loadImage(url);
+      if (request === imageRequest) placeImage(img);
+    }
     catch (err) { statusEl.textContent = err.message; }
     URL.revokeObjectURL(url);
     e.target.value = '';
@@ -282,6 +317,20 @@
   });
 
   // ---------- start ----------
+  async function selectExample(index, recordUndo = true) {
+    const request = ++imageRequest;
+    comparison.hidden = true;
+    try {
+      const [img] = await Promise.all([
+        loadImage(EXAMPLES[index]),
+        loadImage(EXAMPLES[index].replace('.png', '-photo.png'))
+      ]);
+      if (request === imageRequest) placeImage(img, index, recordUndo);
+    } catch (err) {
+      if (request === imageRequest) statusEl.textContent = err.message;
+    }
+  }
+
   const list = $('examples');
   EXAMPLES.forEach((src, i) => {
     const li = document.createElement('li');
@@ -290,14 +339,13 @@
     const im = document.createElement('img');
     im.src = src; im.alt = ''; im.loading = 'lazy';
     b.append(im);
-    b.addEventListener('click', async () => {
-      try { placeImage(await loadImage(src)); $('reference').src=src.replace('.png','-photo.png'); $('reference').hidden=false; $('referenceNote').textContent='Paired source photograph · example '+(i+1); } catch (err) { statusEl.textContent = err.message; }
-    });
+    b.addEventListener('click', () => selectExample(i));
     li.append(b); list.append(li);
   });
 
   fillWhite();
   setSize(sizeEl.value);
+  const initialExample = selectExample(0, false);
 
   async function startModel() {
     $('loadModel').disabled=true;
@@ -310,6 +358,7 @@
       await tf.ready();
       await new Promise(requestAnimationFrame);
       useModel(buf, MODEL_URL.split('/').pop());
+      await initialExample;
       await run();
     } catch (err) {
       console.error(err);
@@ -323,5 +372,4 @@
   }
   $('loadModel').addEventListener('click', startModel);
   startModel();
-  loadImage(EXAMPLES[0]).then(img=>ctx.drawImage(img,0,0,draw.width,draw.height)).catch(err=>statusEl.textContent=err.message);
 })();
