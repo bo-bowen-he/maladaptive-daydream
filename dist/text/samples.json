@@ -1,0 +1,37 @@
+[
+  {
+    "id": "cloud-light",
+    "page": 35,
+    "title": "Clouds as a rhythm",
+    "text": "I always keep the blinds down in my room. Sometimes I just stare at an empty wall, and let my mind\nwonder, and occasionally I notice when clouds pass by, casting lights and shadows onto the wall. And\nwhen there are curtains, I would stare at the sliver of light managing to get through. Somehow this ocean-\ncurrent like rhythm calms me.",
+    "why": "Connects the collected clouds to the original writing and installation rhythm."
+  },
+  {
+    "id": "replaying",
+    "page": 10,
+    "title": "The loop already exists",
+    "text": "I wish my brain can stop replaying every moment of my day over and over again. Magnifying every\nthing, whatever mistake seem bigger, and nothing is accomplished. I feel miserable.",
+    "why": "States the repeating-thought experience directly without names or locations."
+  },
+  {
+    "id": "sound-memory",
+    "page": 11,
+    "title": "Sound, voice, memory",
+    "text": "Can it be\nA sound\nA voice\nA feeling\nA memory\nBothering me\nTellling me\nCoercing me\nHuanting me",
+    "why": "Preserves short lines, repeated address, and source spelling; connects sound and text."
+  },
+  {
+    "id": "chinese-fragment",
+    "page": 28,
+    "title": "Language switching",
+    "text": "想去去不了的地方,想做不敢做的事。\n说了要干的事儿,到点因为懒而不做。",
+    "why": "Shows Chinese-language material without translating or inventing replacement text."
+  },
+  {
+    "id": "polaroid",
+    "page": 25,
+    "title": "Source for the RAG comparison",
+    "text": "I saw a Polaroid on the street today,\nResting by the root of a lamp post,\nOutside of a romantic restaurant,\nIt was two happy girls,\nBut I can only imagine the worst.",
+    "why": "Identifiable wording reappears in both submitted story generations."
+  }
+]

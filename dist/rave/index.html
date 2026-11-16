@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sleep / RAVE — Maladaptive Daydream</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="player.js" defer></script>
+<link rel="stylesheet" href="../license.css"></head>
+<body>
+  <header class="top"><a href="../index.html">← Maladaptive Daydream</a><span>01 / SLEEP</span></header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">THE TRAINED SLEEP MODEL / 360K</p>
+      <h1>Give the breath<br><em>a rhythm.</em></h1>
+      <div class="intro-copy"><p>One slow oscillator moves one coordinate. The trained decoder makes the sound.</p><p class="muted">Start with a 0.3 Hz oscillator, then compare small changes in rate, range, and position.</p></div>
+    </section>
+    <section class="listening" aria-labelledby="listen-title">
+      <div class="section-head"><h2 id="listen-title">The 0.3 Hz experiment</h2><span class="label" id="mode-label">RENDERED MODEL OUTPUT · NO AUDIO INPUT</span></div>
+      <p class="explanation">These are actual 30-second outputs from <code>sleeping_default_p2_360k_streaming</code>. Selecting a preset plays that recorded experiment; it does not rerun the model in the browser.</p>
+      <div class="patch" id="patch" aria-label="A 0.3 hertz oscillator feeds only the first inlet of the trained RAVE decoder, then output gain and both speakers"><span id="patch-cycle">cycle~ 0.3</span><span aria-hidden="true">→</span><span>first coordinate</span><span aria-hidden="true">→</span><span>RAVE decode</span><span aria-hidden="true">→</span><span>gain → L + R</span></div>
+      <div class="rate-presets" role="group" aria-label="Recorded rate experiments, amplitude one">
+        <button class="preset" data-preset="cycle_020_a100" aria-pressed="false"><span>Slower</span><strong>0.2 Hz</strong><small>one cycle / 5 seconds</small></button>
+        <button class="preset selected" data-preset="cycle_030_a100" aria-pressed="true"><span>Reference rhythm</span><strong>0.3 Hz</strong><small>one cycle / 3.33 seconds</small></button>
+        <button class="preset" data-preset="cycle_050_a100" aria-pressed="false"><span>Faster</span><strong>0.5 Hz</strong><small>one cycle / 2 seconds</small></button>
+      </div>
+      <details class="experiments"><summary>More recorded experiments <span>range, position, and a second coordinate</span></summary>
+        <p>Each button loads a separate render with the parameters shown. These settings are not combined.</p>
+        <div class="experiment-buttons" role="group" aria-label="More recorded experiments">
+          <button data-preset="cycle_030_a050" aria-pressed="false">0.3 Hz · range ±0.5</button>
+          <button data-preset="cycle_030_a150" aria-pressed="false">0.3 Hz · range ±1.5</button>
+          <button data-preset="cycle_030_a100_b050" aria-pressed="false">0.3 Hz · center +0.5</button>
+          <button data-preset="cycle_030_z2pos" aria-pressed="false">0.3 Hz · coordinate 2 at +0.5</button>
+          <button data-preset="cycle_030_z2neg" aria-pressed="false">0.3 Hz · coordinate 2 at −0.5</button>
+          <button data-preset="static_zero" aria-pressed="false">All exposed coordinates at zero</button>
+        </div>
+      </details>
+      <div class="reading"><div><span class="label">SELECTED EXPERIMENT</span><h3 id="track-label">Reference rhythm</h3></div><p id="parameters">Rate 0.3 Hz · amplitude 1 · center 0 · coordinate 1 only</p></div>
+      <div class="signal-label"><span id="control-label">INPUT / FIRST LATENT COORDINATE</span><span id="clock">0:00 / 0:30</span></div>
+      <canvas id="control" aria-label="Selected sinusoidal control with current playback position"></canvas>
+      <div class="signal-label"><span>OUTPUT / RENDERED AUDIO</span><span>display scaled for visibility</span></div>
+      <canvas id="waveform" aria-label="Waveform of the selected recorded output"></canvas>
+      <label class="sr-only" for="seek">Playback position in seconds</label><input id="seek" type="range" min="0" max="30" step="0.05" value="0" aria-valuetext="0 seconds">
+      <div class="transport"><button class="primary" id="play" type="button">Play reference rhythm</button><button class="plain" id="restart" type="button">Restart</button><label class="volume">Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="0.65"></label><label class="loop"><input id="loop" type="checkbox"> Loop</label></div>
+      <p id="status" class="status" aria-live="polite">Press Play to hear the selected experiment.</p>
+      <p id="description" class="track-description">The first exposed latent coordinate follows a ±1 sinusoid at 0.3 Hz. The other 15 exposed coordinates stay at zero. No recording is fed into the encoder.</p>
+      <p id="measurement" class="measurement">Measured output rhythm: 0.3 Hz. All oscillator experiments share one playback gain.</p>
+    </section>
+    <section class="comparison" aria-labelledby="compare-title"><h2 id="compare-title">Return to the dataset</h2><p class="muted">Hear a cleaned sleep excerpt and its encode → decode reconstruction. These two 24-second clips share a gain and are aligned by their energy envelopes.</p><div class="compare-buttons" role="group" aria-label="Source comparison"><button data-preset="source" aria-pressed="false">Cleaned source</button><button data-preset="reconstruction" aria-pressed="false">Reconstruction</button><button id="reset-patch">Return to reference rhythm</button></div></section>
+    <section class="details">
+      <h2>What the controls reveal</h2>
+      <div class="detail-text"><p><b>Rate changes the recurring pulse.</b> The 0.2, 0.3, and 0.5 Hz renders each show their strongest slow energy modulation at the chosen rate.</p><p><b>Range and position change the output.</b> Moving through a smaller region, shifting its center, or holding a second coordinate elsewhere changes the model’s sound and level. The coordinates do not have fixed labels such as “snore,” “breath,” or “calm.”</p><p class="muted">This recreates the patch’s control logic at 44.1 kHz. A running Max patch can differ in phase, audio settings, gain, and random noise. The oscillator is drawn at its input phase; model latency remains in the output.</p><p class="muted small">Reference: <a href="https://docs.cycling74.com/reference/cycle~/" target="_blank" rel="noopener noreferrer">cycle~</a> uses a cosine waveform by default. <a href="https://github.com/acids-ircam/nn_tilde/blob/v1.6.0/src/backend/backend.cpp#L34-L75" target="_blank" rel="noopener noreferrer">nn~</a> converts the incoming signal to the model’s latent sample rate.</p></div>
+    </section>
+    <footer><span>44.1 kHz · mono routed to both speakers · 16 exposed coordinates</span><span>Exact model / sleeping_default_p2_360k_streaming.ts</span></footer>
+  <div class="license-footer" role="contentinfo"><small>© 2026 Bo — Maladaptive Daydream. Original creative content: <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Attribution required; a footnote is sufficient.</small><span class="license-links"><a href="../license.html">Attribution &amp; licenses</a> · <a href="https://github.com/bo-bowen-he/maladaptive-daydream">Source on GitHub</a></span></div></main>
+</body>
+</html>

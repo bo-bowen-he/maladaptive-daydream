@@ -1,0 +1,22 @@
+{
+  "bytes": 57835914,
+  "sha256": "0062cfe6d14d8d20b55e3bc8784e3beeed867983b08ca5ba345eef2d9c8e7e31",
+  "chunks": [
+    {
+      "file": "part-00.bin",
+      "size": 16777216
+    },
+    {
+      "file": "part-01.bin",
+      "size": 16777216
+    },
+    {
+      "file": "part-02.bin",
+      "size": 16777216
+    },
+    {
+      "file": "part-03.bin",
+      "size": 7504266
+    }
+  ]
+}

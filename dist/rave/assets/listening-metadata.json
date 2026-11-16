@@ -1,0 +1,46 @@
+{
+  "sample_rate": 44100,
+  "channels": 1,
+  "latent_dimensions": 16,
+  "source_clip_duration_seconds": 24,
+  "alignment_milliseconds": 238.005,
+  "clips": {
+    "source": {
+      "duration_seconds": 24,
+      "frames": 1058400,
+      "sample_rate": 44100,
+      "gain_db": 23.6465,
+      "peak_dbfs": -3.0,
+      "rms_dbfs": -33.105,
+      "sha256": "fdf3331d2d672290a3066980255af7ee04cf53244bf221fb4f859e13da7764ab"
+    },
+    "reconstruction": {
+      "duration_seconds": 24,
+      "frames": 1058400,
+      "sample_rate": 44100,
+      "gain_db": 23.6465,
+      "peak_dbfs": -3.957,
+      "rms_dbfs": -33.286,
+      "sha256": "00c830cf1ae071d31acd8f7374f2334d6829c827315604a8b7112ab1cc4699b9"
+    },
+    "latent_shift": {
+      "duration_seconds": 24,
+      "frames": 1058400,
+      "sample_rate": 44100,
+      "gain_db": 18.1988,
+      "peak_dbfs": -3.0,
+      "rms_dbfs": -30.553,
+      "sha256": "85140b84ec4743604fedf53f4235af541ce736ed3b3d4687486b93241661beb5"
+    },
+    "latent_walk": {
+      "duration_seconds": 24,
+      "frames": 1058400,
+      "sample_rate": 44100,
+      "gain_db": 19.5501,
+      "peak_dbfs": -3.0,
+      "rms_dbfs": -23.685,
+      "sha256": "70566e98eb6916cd3893b97e3de74e38493df695ec21a1008e4fdefc6fad3540"
+    }
+  },
+  "gain_note": "source and reconstruction share gain; two exploration clips use separate peak-safe gain, all capped at +24 dB"
+}

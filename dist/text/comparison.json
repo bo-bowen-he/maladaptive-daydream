@@ -1,0 +1,29 @@
+{
+  "prompt": "tell me a story",
+  "source_excerpt": {
+    "id": "polaroid",
+    "page": 25,
+    "title": "Source for the RAG comparison",
+    "text": "I saw a Polaroid on the street today,\nResting by the root of a lamp post,\nOutside of a romantic restaurant,\nIt was two happy girls,\nBut I can only imagine the worst.",
+    "why": "Identifiable wording reappears in both submitted story generations."
+  },
+  "default": {
+    "label": "Default prompt condition (author supplied)",
+    "intro": "Based on the context provided, it seems the text is a poetic expression of emotions and memories, rather than a straightforward narrative. Given this, it would be more appropriate to craft a story that reflects the themes and emotions present in the text. Here's a story inspired by the given context:",
+    "excerpt": "In the quiet, bustling city of Elysium, where the scent of bitter oranges and pachouli filled the air, lived a young woman named Ava. Her life was a tapestry woven from threads of memory, each one as intricate and complex as the last. One crisp evening, while strolling through the city's heart, she stumbled upon a faded Polaroid, abandoned by the root of a lamppost outside a quaint, romantic restaurant. The image was of two laughing, carefree girls, their smiles as bright as the city lights that now bathed them in a warm, golden glow."
+  },
+  "poetry": {
+    "label": "Poetry-only prompt condition (author supplied)",
+    "excerpt": "In a city far, where whispers stir,\nTwo souls dance, under the lamp’s purr.\nPolaroid lies, by post’s root,\nTwo girls smile, but shadows mute.\n\nIn your heart, a thread you glean,\nWeave, seal it deep within.\nBitter oranges and pachouli’s breath,\nOn your skin, a new self-sheath."
+  },
+  "notes": [
+    "The exact historical system prompts and sampling settings were not supplied. This is an exploratory comparison, not a controlled test.",
+    "Both conditions reuse the Polaroid, street/lamp and two-girls imagery in the source.",
+    "The default condition adds explanatory framing and a fictional character/city. These are generated narrative additions, not facts about the author.",
+    "The poetry-only condition changes the form and removes the explanatory preamble in this example. Retrieval is still anchoring the imagery.",
+    "A separate English greeting in the poetry-only test produced Chinese verse; document language switching without diagnosing its cause.",
+    "The full raw transcripts contain repeated pasted blocks. They were preserved locally; repetitions in the pasted record are not treated as independent model trials."
+  ],
+  "author_assessment": "The responses stay too close to my words for the autonomous rumination state. RAG may still be useful for a keyboard interaction.",
+  "status": "Recorded experiments, not a live hosted chatbot."
+}
